@@ -15,7 +15,7 @@
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": false,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest", "mocha"]
+    "types": ["node"]
   },
   "include": [ "src/**/*.ts"],
   "exclude": ["node_modules", "dist", "coverage"]
