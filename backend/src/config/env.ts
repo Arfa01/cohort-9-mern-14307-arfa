@@ -1,22 +1,9 @@
 import "dotenv/config";
 
-const allowedEnvironments = [
-  "development",
-  "test",
-  "production",
-] as const;
+const allowedEnvironments = [ "development", "test", "production",] as const;
 
-const allowedLogLevels = [
-  "fatal",
-  "error",
-  "warn",
-  "info",
-  "debug",
-  "trace",
-  "silent",
-] as const;
-
-type NodeEnvironment = (typeof allowedEnvironments)[number];
+const allowedLogLevels = [ "fatal", "error", "warn","info","debug","trace","silent",] as const;
+type NodeEnvironment = (typeof allowedEnvironments)[number]; // TypeScript type that represents allowed values for the NODE_ENV environment variable. "development" | "test" | "production"
 type LogLevel = (typeof allowedLogLevels)[number];
 
 export interface AppEnvironment {
@@ -72,12 +59,22 @@ function readPort(): number {
   return port;
 }
 
-export function getEnvironment(): Readonly<AppEnvironment> {
+export function getLoggingEnvironment(): Readonly<
+  Pick<AppEnvironment, "nodeEnv" | "logLevel">
+> {
   return Object.freeze({
     nodeEnv: readNodeEnvironment(),
+    logLevel: readLogLevel(),
+  });
+}
+
+export function getEnvironment(): Readonly<AppEnvironment> {
+  const loggingEnvironment = getLoggingEnvironment();
+
+  return Object.freeze({
+    ...loggingEnvironment,
     port: readPort(),
     mongodbUri: readRequiredVariable("MONGODB_URI"),
-    logLevel: readLogLevel(),
     clientOrigin: readRequiredVariable("CLIENT_ORIGIN"),
   });
 }

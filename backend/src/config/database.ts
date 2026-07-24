@@ -35,6 +35,10 @@ export async function connectDatabase(uri: string): Promise<void> {
   );
 }
 
+export function isDatabaseReady(): boolean {
+  return mongoose.connection.readyState === 1;
+}
+
 export async function disconnectDatabase(): Promise<void> {
   await mongoose.disconnect();
   logger.info("MongoDB disconnected");

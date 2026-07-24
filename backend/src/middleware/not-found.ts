@@ -9,7 +9,7 @@ export function notFoundHandler(
     error: {
       code: "ROUTE_NOT_FOUND",
       message: "The requested route was not found.",
-      path: request.originalUrl,
+      path: request.path,
     },
   });
 }

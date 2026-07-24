@@ -1,9 +1,12 @@
-import "dotenv/config";
+// in development, we want to see the logs in a more human-readable format, so we use pino-pretty. In production, we want to see the logs in a more structured format, so we use pino.
+
 import pino from "pino";
 
-const environment = process.env.NODE_ENV ?? "development";
-const isDevelopment = environment === "development";
-const isTest = environment === "test";
+import { getLoggingEnvironment } from "./env.js";
+
+const { nodeEnv, logLevel } = getLoggingEnvironment();
+const isDevelopment = nodeEnv === "development";
+const isTest = nodeEnv === "test";
 
 const transport = isDevelopment
   ? pino.transport({
@@ -18,7 +21,7 @@ const transport = isDevelopment
 
 export const logger = pino(
   {
-    level: isTest ? "silent" : (process.env.LOG_LEVEL ?? "info"),
+    level: isTest ? "silent" : logLevel,
     redact: {
       paths: [
         "req.headers.authorization",

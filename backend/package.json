@@ -9,8 +9,7 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json",
     "lint": "eslint .",
-    "test": "NODE_ENV=test node --import tsx ./node_modules/mocha/bin/mocha.js \"test/**/*.test.ts\""
-  },
+    "test": "cross-env NODE_ENV=test node --import tsx ./node_modules/mocha/bin/mocha.js \"test/**/*.test.ts\""  },
   "keywords": [
     "notes",
     "express",
@@ -38,6 +37,7 @@
     "@types/node": "^26.1.1",
     "@types/supertest": "^7.2.1",
     "chai": "^6.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^10.7.0",
     "globals": "^17.7.0",
     "mocha": "^11.7.6",

@@ -8,8 +8,12 @@ import {
 import { getEnvironment } from "./config/env.js";
 import { logger } from "./config/logger.js";
 
+const HTTP_SHUTDOWN_TIMEOUT_MS = 10_000;
+
 async function closeHttpServer(server: Server): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
+  let timeoutId: NodeJS.Timeout | undefined;
+
+  const closePromise = new Promise<void>((resolve, reject) => {
     server.close((error) => {
       if (error) {
         reject(error);
@@ -19,6 +23,28 @@ async function closeHttpServer(server: Server): Promise<void> {
       resolve();
     });
   });
+
+  const timeoutPromise = new Promise<void>((resolve) => {
+    timeoutId = setTimeout(() => {
+      logger.warn(
+        { timeoutMs: HTTP_SHUTDOWN_TIMEOUT_MS },
+        "HTTP shutdown deadline reached; closing active connections",
+      );
+
+      server.closeAllConnections();
+      resolve();
+    }, HTTP_SHUTDOWN_TIMEOUT_MS);
+
+    timeoutId.unref();
+  });
+
+  try {
+    await Promise.race([closePromise, timeoutPromise]);
+  } finally {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+  }
 }
 
 async function startServer(): Promise<void> {

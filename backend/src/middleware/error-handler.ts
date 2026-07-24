@@ -22,7 +22,7 @@ export const errorHandler: ErrorRequestHandler = (
     {
       err: error,
       method: request.method,
-      path: request.originalUrl,
+      path: request.path,
     },
     "Unhandled request error",
   );
