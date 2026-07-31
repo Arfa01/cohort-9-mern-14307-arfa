@@ -6,6 +6,7 @@ import type {
 } from "express";
 
 import { logger } from "../config/logger.js";
+import { AppError } from "../utils/app-error.js";
 
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
@@ -18,6 +19,20 @@ export const errorHandler: ErrorRequestHandler = (
     return;
   }
 
+  if (error instanceof AppError) {    // expected errors (instances of appError) recieve their intended 400, 401, 409
+    response.status(error.statusCode).json({
+      success: false,
+      error: {
+        code: error.code,
+        message: error.message,
+        ...(error.details === undefined
+          ? {}
+          : { details: error.details }),
+      },
+    });
+    return;
+  }
+
   logger.error(
     {
       err: error,
@@ -27,11 +42,12 @@ export const errorHandler: ErrorRequestHandler = (
     "Unhandled request error",
   );
 
-  response.status(500).json({
-    success: false,
+  response.status(500).json({       // unexpected errors are logged internally, return generic 500
+    success: false,               
     error: {
       code: "INTERNAL_SERVER_ERROR",
-      message: "An unexpected error occurred. Please try again later.",
+      message:
+        "An unexpected error occurred. Please try again later.",
     },
   });
 };

@@ -33,6 +33,7 @@ export const logger = pino(
         "token",
         "accessToken",
         "refreshToken",
+        "passwordHash",
       ],
       censor: "[REDACTED]",
     },
