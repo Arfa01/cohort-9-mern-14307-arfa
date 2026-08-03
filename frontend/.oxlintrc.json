@@ -1,0 +1,10 @@
+// set up the rules for the linter to follow when analyzing the code. correct React Hook usage, export compaitibilty . 
+
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}

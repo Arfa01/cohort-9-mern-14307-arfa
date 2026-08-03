@@ -1,0 +1,11 @@
+// typechecks Jest tests and adds their node or jest types like expect, describe, test, etc
+
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["node", "@testing-library/jest-dom"]
+  },
+  "include": ["src/test/**/*.ts", "src/test/**/*.tsx"],
+  "exclude": []
+}
