@@ -9,6 +9,7 @@
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
+    "strict": true,
 
     // (Bundler mode) meaning the compiler wont try to resolve modules, will rely on Vite
     "moduleResolution": "bundler",

@@ -1,4 +1,4 @@
-// making refrerences to other tsconfig files for the frontend project
+// making references to other tsconfig files for the frontend
 
 {
   "files": [],

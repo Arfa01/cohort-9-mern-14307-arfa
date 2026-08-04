@@ -13,7 +13,8 @@ index.html runs =>
 → auth.api.ts calls Express
 → Express sets/reads the HTTP-only cookie
 
-
+| File or area | Responsibility |
+|---|---|
 | `src/api/client.ts` | Configures Axios and safely normalizes backend/network errors. |
 | `src/api/auth.api.ts` | Contains only the four authentication API calls and their TypeScript types. |
 | `src/validation/auth.schemas.ts` | Mirrors the backend's Zod validation for fast form feedback. |
