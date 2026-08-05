@@ -1,5 +1,6 @@
 
 import { LoaderCircle, RotateCcw } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 
 import { GuestOnlyRoute, ProtectedRoute } from './auth/RouteGuards'
@@ -7,6 +8,32 @@ import { useAuth } from './auth/useAuth'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+
+const NoteEditorPage = lazy(async () => {
+  const module = await import('./pages/NoteEditorPage')
+  return { default: module.NoteEditorPage }
+})
+
+function NoteEditorRoute() {
+  return (
+    <Suspense
+      fallback={
+        <main className="grid min-h-screen place-items-center bg-stone-50 px-5">
+          <div role="status" aria-live="polite" className="text-center">
+            <LoaderCircle
+              aria-hidden="true"
+              className="mx-auto animate-spin text-brand-700"
+              size={32}
+            />
+            <p className="mt-4 font-semibold text-stone-900">Opening the editor…</p>
+          </div>
+        </main>
+      }
+    >
+      <NoteEditorPage />
+    </Suspense>
+  )
+}
 
 function App() {
   const { state, retrySession } = useAuth()
@@ -61,6 +88,8 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/notes/new" element={<NoteEditorRoute />} />
+        <Route path="/notes/:noteId/edit" element={<NoteEditorRoute />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

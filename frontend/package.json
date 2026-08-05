@@ -7,13 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "test": "jest --runInBand --passWithNoTests",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "typecheck": "tsc -b --pretty false",
     "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.6.0",
+    "@tiptap/pm": "3.29.2",
+    "@tiptap/react": "3.29.2",
+    "@tiptap/starter-kit": "3.29.2",
     "axios": "^1.19.0",
     "lucide-react": "^1.28.0",
     "react": "^19.2.8",

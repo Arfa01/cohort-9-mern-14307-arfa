@@ -12,6 +12,7 @@ import {
   registerUser,
   type User,
 } from '../api/auth.api'
+import { listNotes } from '../api/notes.api'
 import { AuthProvider } from '../auth/AuthProvider'
 
 jest.mock('../api/auth.api', () => ({
@@ -21,10 +22,19 @@ jest.mock('../api/auth.api', () => ({
   logoutUser: jest.fn(),
 }))
 
+jest.mock('../api/notes.api', () => ({
+  listNotes: jest.fn(),
+  getNote: jest.fn(),
+  createNote: jest.fn(),
+  updateNote: jest.fn(),
+  deleteNote: jest.fn(),
+}))
+
 const mockedGetCurrentUser = jest.mocked(getCurrentUser)
 const mockedLoginUser = jest.mocked(loginUser)
 const mockedRegisterUser = jest.mocked(registerUser)
 const mockedLogoutUser = jest.mocked(logoutUser)
+const mockedListNotes = jest.mocked(listNotes)
 
 const USER: User = {
   id: '507f1f77bcf86cd799439011',
@@ -80,6 +90,7 @@ function renderApp(path: string): RenderResult {
 describe('frontend authentication flow', () => {
   beforeEach(() => {
     jest.resetAllMocks()
+    mockedListNotes.mockResolvedValue([])
     mockedGetCurrentUser.mockRejectedValue(
       responseError(401, 'UNAUTHENTICATED', 'Authentication is required.'),
     )

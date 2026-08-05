@@ -89,9 +89,21 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
     setState({ status: 'unauthenticated', user: null, error: null })
   }, [])
 
+  const invalidateSession = useCallback((): void => {
+    restoreRequestId.current += 1
+    setState({ status: 'unauthenticated', user: null, error: null })
+  }, [])
+
   const value = useMemo<AuthContextValue>(
-    () => ({ state, login, register, logout, retrySession }),
-    [state, login, register, logout, retrySession],
+    () => ({
+      state,
+      login,
+      register,
+      logout,
+      retrySession,
+      invalidateSession,
+    }),
+    [state, login, register, logout, retrySession, invalidateSession],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

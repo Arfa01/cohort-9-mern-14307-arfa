@@ -40,7 +40,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -55,6 +57,77 @@ button:disabled {
 ::selection {
   color: #2d2100;
   background: #ffec80;
+}
+
+.note-editor .ProseMirror > * + * {
+  margin-top: 0.75rem;
+}
+
+.note-editor .ProseMirror h1,
+.note-editor .ProseMirror h2,
+.note-editor .ProseMirror h3 {
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.note-editor .ProseMirror h1 {
+  font-size: 1.875rem;
+}
+
+.note-editor .ProseMirror h2 {
+  font-size: 1.5rem;
+}
+
+.note-editor .ProseMirror h3 {
+  font-size: 1.25rem;
+}
+
+.note-editor .ProseMirror ul,
+.note-editor .ProseMirror ol {
+  padding-left: 1.5rem;
+}
+
+.note-editor .ProseMirror ul {
+  list-style: disc;
+}
+
+.note-editor .ProseMirror ol {
+  list-style: decimal;
+}
+
+.note-editor .ProseMirror blockquote {
+  padding-left: 1rem;
+  color: #57534e;
+  border-left: 3px solid #ffd60a;
+}
+
+.note-editor .ProseMirror pre {
+  overflow-x: auto;
+  padding: 1rem;
+  color: #fafaf9;
+  background: #292524;
+  border-radius: 0.75rem;
+}
+
+.note-editor .ProseMirror code {
+  padding: 0.12rem 0.3rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f5f5f4;
+  border-radius: 0.3rem;
+}
+
+.note-editor .ProseMirror pre code {
+  padding: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.note-editor .ProseMirror a {
+  color: #8a5a00;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
