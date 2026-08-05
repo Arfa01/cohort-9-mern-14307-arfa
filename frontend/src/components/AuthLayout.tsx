@@ -58,7 +58,7 @@ export function AuthLayout({
 
           <div className="relative flex items-center gap-2 text-sm text-stone-700">
             <LockKeyhole aria-hidden="true" size={16} />
-            Secured with an HTTP-only session cookie
+             A focused space for writing and organizing notes
           </div>
         </div>
 
