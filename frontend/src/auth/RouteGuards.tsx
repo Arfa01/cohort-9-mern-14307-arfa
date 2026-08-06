@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router'
 
 import { useAuth } from './useAuth'
 
-export function ProtectedRoute() {
+export function ProtectedRoute(): React.JSX.Element {
   const { state } = useAuth()
   const location = useLocation()
 
@@ -14,7 +14,7 @@ export function ProtectedRoute() {
   return <Outlet />
 }
 
-export function GuestOnlyRoute() {
+export function GuestOnlyRoute(): React.JSX.Element {
   const { state } = useAuth()
 
   if (state.status === 'authenticated') {

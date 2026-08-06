@@ -44,5 +44,6 @@ export const registerSchema = z
     path: ['confirmPassword'],
   })
 
-export type LoginFormValues = z.input<typeof loginSchema>
+export type LoginFormInput = z.input<typeof loginSchema>
+export type LoginFormValues = z.output<typeof loginSchema>
 export type RegisterFormValues = z.input<typeof registerSchema>

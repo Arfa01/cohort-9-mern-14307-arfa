@@ -13,6 +13,18 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 const inputClassName =
   'min-h-12 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-950 outline-none transition placeholder:text-stone-400 focus:border-brand-700 focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:bg-stone-100'
 
+function getFieldAccessibility(id: string, error?: string, hint?: string) {
+  return {
+    describedBy:
+      error !== undefined
+        ? `${id}-error`
+        : hint !== undefined
+          ? `${id}-hint`
+          : undefined,
+    hasError: error !== undefined,
+  }
+}
+
 function FieldMessage({
   id,
   error,
@@ -20,7 +32,7 @@ function FieldMessage({
 }: Pick<FieldProps, 'id' | 'error' | 'hint'>) {
   if (error !== undefined) {
     return (
-      <p id={`${id}-error`} className="mt-1.5 text-sm text-red-700">
+      <p id={`${id}-error`} role="alert" className="mt-1.5 text-sm text-red-700">
         {error}
       </p>
     )
@@ -45,8 +57,7 @@ export function TextField({
   className,
   ...inputProps
 }: FieldProps) {
-  const describedBy =
-    error !== undefined ? `${id}-error` : hint !== undefined ? `${id}-hint` : undefined
+  const { describedBy, hasError } = getFieldAccessibility(id, error, hint)
 
   return (
     <div>
@@ -57,7 +68,7 @@ export function TextField({
         {...inputProps}
         id={id}
         aria-describedby={describedBy}
-        aria-invalid={error !== undefined}
+        aria-invalid={hasError}
         className={`${inputClassName} ${error === undefined ? '' : 'border-red-400 focus:border-red-600 focus:ring-red-100'} ${className ?? ''}`}
       />
       <FieldMessage id={id} error={error} hint={hint} />
@@ -74,8 +85,7 @@ export function PasswordField({
   ...inputProps
 }: FieldProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const describedBy =
-    error !== undefined ? `${id}-error` : hint !== undefined ? `${id}-hint` : undefined
+  const { describedBy, hasError } = getFieldAccessibility(id, error, hint)
 
   return (
     <div>
@@ -88,7 +98,7 @@ export function PasswordField({
           id={id}
           type={isVisible ? 'text' : 'password'}
           aria-describedby={describedBy}
-          aria-invalid={error !== undefined}
+          aria-invalid={hasError}
           className={`${inputClassName} pr-12 ${error === undefined ? '' : 'border-red-400 focus:border-red-600 focus:ring-red-100'} ${className ?? ''}`}
         />
         <button

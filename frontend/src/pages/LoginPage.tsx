@@ -8,11 +8,11 @@ import { normalizeApiError } from '../api/client'
 import { useAuth } from '../auth/useAuth'
 import { PasswordField, TextField } from '../components/AuthFields'
 import { AuthLayout } from '../components/AuthLayout'
-import { loginSchema, type LoginFormValues } from '../validation/auth.schemas'
-
-interface LoginLocationState {
-  from?: string
-}
+import {
+  loginSchema,
+  type LoginFormInput,
+  type LoginFormValues,
+} from '../validation/auth.schemas'
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -23,7 +23,7 @@ export function LoginPage() {
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginFormInput, unknown, LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
     mode: 'onBlur',
@@ -32,8 +32,14 @@ export function LoginPage() {
   const handleLogin = async (values: LoginFormValues) => {
     try {
       await login(values)
-      const state = location.state as LoginLocationState | null
-      navigate(state?.from ?? '/dashboard', { replace: true })
+      const from =
+        typeof location.state === 'object' &&
+        location.state !== null &&
+        'from' in location.state &&
+        typeof location.state.from === 'string'
+          ? location.state.from
+          : '/dashboard'
+      navigate(from, { replace: true })
     } catch (caughtError: unknown) {
       const problem = normalizeApiError(
         caughtError,
@@ -77,6 +83,7 @@ export function LoginPage() {
         className="space-y-5"
       >
         <TextField
+          {...register('email')}
           id="email"
           label="Email address"
           type="email"
@@ -84,17 +91,16 @@ export function LoginPage() {
           placeholder="you@example.com"
           disabled={isSubmitting}
           error={errors.email?.message}
-          {...register('email')}
         />
 
         <PasswordField
+          {...register('password')}
           id="password"
           label="Password"
           autoComplete="current-password"
           placeholder="Enter your password"
           disabled={isSubmitting}
           error={errors.password?.message}
-          {...register('password')}
         />
 
         {errors.root?.server?.message === undefined ? null : (

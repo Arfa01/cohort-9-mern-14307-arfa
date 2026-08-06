@@ -1,6 +1,6 @@
 
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, type RenderResult } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 
@@ -32,12 +32,27 @@ const USER: User = {
   email: 'arfa@example.com',
 }
 
+interface TestResponseError {
+  isAxiosError: true
+  response: {
+    status: number
+    data: {
+      success: false
+      error: {
+        code: string
+        message: string
+        details?: Array<{ field: string; message: string }>
+      }
+    }
+  }
+}
+
 function responseError(
   status: number,
   code: string,
   message: string,
   details?: Array<{ field: string; message: string }>,
-) {
+): TestResponseError {
   return {
     isAxiosError: true,
     response: {
@@ -50,9 +65,9 @@ function responseError(
   }
 }
 
-const networkError = { isAxiosError: true }
+const networkError: { isAxiosError: true } = { isAxiosError: true }
 
-function renderApp(path: string) {
+function renderApp(path: string): RenderResult {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <AuthProvider>

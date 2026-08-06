@@ -89,16 +89,17 @@ export function RegisterPage() {
         className="space-y-4"
       >
         <TextField
+          {...register('name')}
           id="name"
           label="Full name"
           autoComplete="name"
           placeholder="Arfa Riaz"
           disabled={isSubmitting}
           error={errors.name?.message}
-          {...register('name')}
         />
 
         <TextField
+          {...register('email')}
           id="email"
           label="Email address"
           type="email"
@@ -106,10 +107,10 @@ export function RegisterPage() {
           placeholder="you@example.com"
           disabled={isSubmitting}
           error={errors.email?.message}
-          {...register('email')}
         />
 
         <PasswordField
+          {...register('password')}
           id="password"
           label="Password"
           autoComplete="new-password"
@@ -117,17 +118,16 @@ export function RegisterPage() {
           hint="Use at least 8 characters."
           disabled={isSubmitting}
           error={errors.password?.message}
-          {...register('password')}
         />
 
         <PasswordField
+          {...register('confirmPassword')}
           id="confirmPassword"
           label="Confirm password"
           autoComplete="new-password"
           placeholder="Enter the same password again"
           disabled={isSubmitting}
           error={errors.confirmPassword?.message}
-          {...register('confirmPassword')}
         />
 
         {errors.root?.server?.message === undefined ? null : (
