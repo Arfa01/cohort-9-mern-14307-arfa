@@ -36,7 +36,9 @@ export function LoginPage() {
         typeof location.state === 'object' &&
         location.state !== null &&
         'from' in location.state &&
-        typeof location.state.from === 'string'
+        typeof location.state.from === 'string' &&
+        location.state.from.startsWith('/') &&
+        !location.state.from.startsWith('//')
           ? location.state.from
           : '/dashboard'
       navigate(from, { replace: true })
