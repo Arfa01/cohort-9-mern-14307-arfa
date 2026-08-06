@@ -5,7 +5,7 @@ import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
 import type pino from "pino";
-import { pinoHttp } from "pino-http";
+import { pinoHttp, type HttpLogger } from "pino-http";
 
 import {
   logger,
@@ -19,7 +19,7 @@ import { noteRouter } from "./routes/note.routes.js";
 
 export function createRequestLogger(
   appLogger: pino.Logger = logger,
-) {
+): HttpLogger<IncomingMessage, ServerResponse> {
   return pinoHttp<IncomingMessage, ServerResponse>({
     logger: appLogger,
     serializers: {
