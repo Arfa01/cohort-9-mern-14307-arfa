@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
     "test:watch": "jest --watch",
     "typecheck": "tsc -b --pretty false",
     "preview": "vite preview"
@@ -43,7 +44,7 @@
     "jest-environment-jsdom": "^30.4.1",
     "oxlint": "^1.75.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "~6.0.2",
+    "typescript": "~5.9.3",
     "vite": "^8.2.0"
   }
 }

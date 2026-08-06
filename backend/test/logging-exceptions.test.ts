@@ -67,6 +67,31 @@ async function waitForLogs(): Promise<void> {
 }
 
 describe("Application logging and exception handling", () => {
+  let originalJwtSecret: string | undefined;
+  let originalJwtTtlSeconds: string | undefined;
+
+  before(() => {
+    originalJwtSecret = process.env.JWT_SECRET;
+    originalJwtTtlSeconds = process.env.JWT_TTL_SECONDS;
+    process.env.JWT_SECRET =
+      "logging-test-only-secret-that-is-over-32-characters";
+    process.env.JWT_TTL_SECONDS = "3600";
+  });
+
+  after(() => {
+    if (originalJwtSecret === undefined) {
+      delete process.env.JWT_SECRET;
+    } else {
+      process.env.JWT_SECRET = originalJwtSecret;
+    }
+
+    if (originalJwtTtlSeconds === undefined) {
+      delete process.env.JWT_TTL_SECONDS;
+    } else {
+      process.env.JWT_TTL_SECONDS = originalJwtTtlSeconds;
+    }
+  });
+
   it("correlates successful request and response logs", async () => {
     const { collector, logger } = createTestLogger();
     const app = createApp("http://localhost:5173", logger);

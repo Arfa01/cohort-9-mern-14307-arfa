@@ -1,22 +1,32 @@
-# Backend
+# Notes API
 
-This directory will contain the Notes App backend.
+The backend is an Express 5 and TypeScript API backed by MongoDB and Mongoose. It provides authentication, owner-scoped Notes CRUD, health probes, structured errors, and request-correlated Pino logging.
 
-Model: defines how a user is stored in MongoDB.
-Validation schema: decides whether incoming form data is acceptable.
-Service: performs business logic such as hashing and credential comparison.
-Controller: translates HTTP requests into service calls and responses.
-Middleware: blocks unauthenticated requests before protected controllers run.
-Route: maps an HTTP method and URL to middleware/controller functions.
-Utility: shared JWT, cookie and error behavior.
+## Layers
 
+| Directory | Responsibility |
+| --- | --- |
+| `src/routes` | Map HTTP methods and paths to middleware and controllers |
+| `src/controllers` | Translate requests into service calls and responses |
+| `src/services` | Apply authentication and Notes business rules |
+| `src/models` | Define MongoDB documents and indexes |
+| `src/validation` | Validate and normalize request input with Zod |
+| `src/middleware` | Authenticate sessions and handle 404/error responses |
+| `src/config` | Validate environment, connect MongoDB, and configure Pino |
+| `test` | Exercise APIs with Mocha, Chai, Supertest, and mongodb-memory-server |
 
-## authentication:
-![auth flow](image.png)
-### dependencies
-authentication:
-bcryptjs: hashes and compares passwords without native compilation; it supports TypeScript and ESM. Validate passwords at no more than 72 UTF-8 bytes because bcrypt truncates beyond that.
-jsonwebtoken: signs and verifies JWTs. Use verify(), never merely decode(), because decoding does not authenticate the signature.
-cookie-parser: exposes cookies through request.cookies.
-zod: validates registration and login request bodies.
-mongodb-memory-server: provides a disposable MongoDB instance for integration tests, protecting your real Atlas data.
+JWTs are verified and stored in an HTTP-only cookie. Notes ownership is always derived from the authenticated session, rich-text HTML is sanitized before storage, and logs redact credentials and request bodies.
+
+## Commands
+
+```bash
+npm run dev
+npm run typecheck
+npm run lint
+npm test
+npm run test:coverage
+npm run build
+npm audit --omit=dev
+```
+
+See the [root README](../README.md) for environment variables, endpoints, local setup, and the final SonarQube workflow.
