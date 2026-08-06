@@ -19,9 +19,9 @@ import { noteRouter } from "./routes/note.routes.js";
 
 export function createRequestLogger(
   appLogger: pino.Logger = logger,
-): ReturnType<typeof pinoHttp> {
+) {
   return pinoHttp<IncomingMessage, ServerResponse>({
-  logger: appLogger,
+    logger: appLogger,
     serializers: {
       req: (request) => ({
         id: request.id,
