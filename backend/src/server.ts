@@ -96,10 +96,8 @@ async function startServer(): Promise<void> {
 }
 
 void startServer().catch((error: unknown) => {
-  logger.error(
-    {
-      errorName: error instanceof Error ? error.name : "UnknownError",
-    },
+  logger.fatal(
+    { err: error },
     "The Notes API could not start",
   );
 
