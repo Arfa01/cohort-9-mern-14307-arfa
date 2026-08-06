@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-
+import type { IncomingMessage, ServerResponse } from "node:http";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Express } from "express";
@@ -20,8 +20,8 @@ import { noteRouter } from "./routes/note.routes.js";
 export function createRequestLogger(
   appLogger: pino.Logger = logger,
 ): ReturnType<typeof pinoHttp> {
-  return pinoHttp({
-    logger: appLogger,
+  return pinoHttp<IncomingMessage, ServerResponse>({
+  logger: appLogger,
     serializers: {
       req: (request) => ({
         id: request.id,
