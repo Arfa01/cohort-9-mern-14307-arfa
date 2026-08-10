@@ -3,7 +3,7 @@ import { ArrowLeft, FileQuestion, LoaderCircle, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Link, useNavigate, useParams } from 'react-router'
-
+import type { JSX } from 'react'
 import { normalizeApiError } from '../api/client'
 import { createNote, getNote, updateNote } from '../api/notes.api'
 import { useAuth } from '../auth/useAuth'
@@ -20,7 +20,7 @@ type LoadState =
   | { status: 'not-found' }
   | { status: 'error'; message: string }
 
-export function NoteEditorPage() {
+export function NoteEditorPage(): JSX.Element {
   const { noteId } = useParams<{ noteId: string }>()
   const isEditing = noteId !== undefined
   const navigate = useNavigate()

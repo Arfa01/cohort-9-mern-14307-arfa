@@ -28,7 +28,7 @@ interface NotesResponse {
     notes: Note[]
   }
 }
-
+// Rejects with the raw Axios request error for the caller to normalize
 export async function listNotes(signal?: AbortSignal): Promise<Note[]> {
   const response = await apiClient.get<NotesResponse>('/notes', { signal })
   return response.data.data.notes

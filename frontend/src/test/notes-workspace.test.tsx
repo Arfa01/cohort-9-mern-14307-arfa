@@ -132,9 +132,23 @@ describe('notes workspace', () => {
   })
 
   it('loads notes in server order and renders only a plain-text preview', async () => {
-    mockedListNotes.mockResolvedValue([NOTE])
+    const olderNote: Note = {
+      ...NOTE,
+      id: '507f1f77bcf86cd799439013',
+      title: 'Retro notes',
+      content: '<p>Older</p>',
+    }
+
+    mockedListNotes.mockResolvedValue([NOTE, olderNote])
 
     renderApp('/dashboard')
+
+    const noteHeadings = await screen.findAllByRole('heading', { level: 3 })
+
+    expect(noteHeadings.map((heading) => heading.textContent)).toEqual([
+      'Launch plan',
+      'Retro notes',
+    ])
 
     expect(
       await screen.findByRole('heading', { name: 'Launch plan' }),
