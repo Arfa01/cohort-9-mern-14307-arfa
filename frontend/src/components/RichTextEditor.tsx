@@ -1,4 +1,5 @@
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
+import type { JSX, ReactNode } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import {
   Bold,
@@ -14,7 +15,6 @@ import {
   Undo2,
 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import type { ReactNode } from 'react'
 
 interface RichTextEditorProps {
   value: string
@@ -33,13 +33,7 @@ interface ToolbarButtonProps {
   children: ReactNode
 }
 
-function ToolbarButton({
-  label,
-  active,
-  disabled,
-  onClick,
-  children,
-}: ToolbarButtonProps) {
+function ToolbarButton({ label, active, disabled, onClick, children }: ToolbarButtonProps): JSX.Element {
   return (
     <button
       type="button"
@@ -59,14 +53,7 @@ function ToolbarButton({
   )
 }
 
-export function RichTextEditor({
-  value,
-  onChange,
-  disabled = false,
-  invalid = false,
-  focusOnInvalid = false,
-  ariaDescribedBy,
-}: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, disabled = false, invalid = false, focusOnInvalid = false, ariaDescribedBy }: RichTextEditorProps): JSX.Element {
   const onChangeRef = useRef(onChange)
   const wasFocusOnInvalid = useRef(false)
 
@@ -133,14 +120,25 @@ export function RichTextEditor({
       return
     }
 
-    editor.view.dom.setAttribute('aria-invalid', invalid ? 'true' : 'false')
+    editor.setOptions({
+      editorProps: {
+        attributes: {
+          role: 'textbox',
+          'aria-label': 'Note content',
+          'aria-multiline': 'true',
+          'aria-invalid': invalid ? 'true' : 'false',
+          'aria-describedby': ariaDescribedBy,
+          class: 'min-h-72 px-5 py-4 focus:outline-none sm:min-h-80',
+        },
+      },
+    })
 
     if (invalid && focusOnInvalid && !wasFocusOnInvalid.current) {
       editor.commands.focus()
     }
 
     wasFocusOnInvalid.current = invalid && focusOnInvalid
-  }, [editor, focusOnInvalid, invalid])
+  }, [ariaDescribedBy, editor, focusOnInvalid, invalid])
 
   const editorState = useEditorState({
     editor,
