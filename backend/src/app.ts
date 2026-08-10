@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { healthRouter } from "./routes/health.routes.js";
+import { noteRouter } from "./routes/note.routes.js";
 
 export function createApp(clientOrigin: string): Express {
   const app = express();
@@ -40,6 +41,7 @@ export function createApp(clientOrigin: string): Express {
 
   app.use("/api/health", healthRouter);
   app.use("/api/auth", authRouter);      // auth router should be mounted before the errors middlewares.
+  app.use("/api/notes", noteRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
