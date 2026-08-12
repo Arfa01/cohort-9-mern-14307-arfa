@@ -131,7 +131,7 @@ describe('notes workspace', () => {
     mockedListNotes.mockResolvedValue([])
   })
 
-  it('loads notes in server order and renders only a plain-text preview', async () => {
+  it('keeps server order for equal update times and renders only a plain-text preview', async () => {
     const olderNote: Note = {
       ...NOTE,
       id: '507f1f77bcf86cd799439013',
@@ -156,6 +156,125 @@ describe('notes workspace', () => {
     expect(screen.getByText('Week one Hello world')).toBeInTheDocument()
     expect(screen.queryByText('alert(1)')).not.toBeInTheDocument()
     expect(document.querySelector('script')).toBeNull()
+  })
+
+  it('searches titles and visible rich-text content without indexing scripts', async () => {
+    const user = userEvent.setup()
+    const contentNote: Note = {
+      ...NOTE,
+      id: '507f1f77bcf86cd799439013',
+      title: 'Retro notes',
+      content:
+        '<p>Review the quarterly budget</p><script>hidden launch token</script>',
+      updatedAt: '2026-08-04T09:00:00.000Z',
+    }
+
+    mockedListNotes.mockResolvedValue([NOTE, contentNote])
+
+    renderApp('/dashboard')
+
+    const searchInput = await screen.findByRole('searchbox', {
+      name: 'Search notes',
+    })
+
+    await user.type(searchInput, 'lAuNcH')
+
+    expect(
+      screen.getByRole('heading', { name: 'Launch plan' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: 'Retro notes' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Showing 1 of 2 notes')).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Clear note search' }),
+    )
+
+    expect(searchInput).toHaveValue('')
+    expect(
+      screen.getByRole('heading', { name: 'Retro notes' }),
+    ).toBeInTheDocument()
+
+    await user.type(searchInput, 'QUARTERLY BUDGET')
+
+    expect(
+      screen.getByRole('heading', { name: 'Retro notes' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: 'Launch plan' }),
+    ).not.toBeInTheDocument()
+
+    await user.clear(searchInput)
+    await user.type(searchInput, 'alert(1)')
+
+    expect(
+      screen.getByRole('heading', { name: 'No matching notes' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Showing 0 of 2 notes')).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Show all notes' }),
+    )
+
+    expect(searchInput).toHaveValue('')
+    expect(
+      screen.getByRole('heading', { name: 'Launch plan' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Retro notes' }),
+    ).toBeInTheDocument()
+  })
+
+  it('sorts notes by update time and title while keeping invalid dates last', async () => {
+    const user = userEvent.setup()
+    const oldestNote: Note = {
+      ...NOTE,
+      id: '507f1f77bcf86cd799439013',
+      title: 'Zebra 10',
+      updatedAt: '2026-08-01T09:00:00.000Z',
+    }
+    const invalidDateNote: Note = {
+      ...NOTE,
+      id: '507f1f77bcf86cd799439014',
+      title: 'Beta 1',
+      updatedAt: 'not-a-date',
+    }
+    const newestNote: Note = {
+      ...NOTE,
+      id: '507f1f77bcf86cd799439015',
+      title: 'Alpha 2',
+      updatedAt: '2026-08-09T09:00:00.000Z',
+    }
+
+    mockedListNotes.mockResolvedValue([
+      oldestNote,
+      invalidDateNote,
+      newestNote,
+    ])
+
+    renderApp('/dashboard')
+
+    await screen.findByRole('heading', { name: 'Alpha 2' })
+
+    const getNoteTitles = () =>
+      screen
+        .getAllByRole('heading', { level: 3 })
+        .map((heading) => heading.textContent)
+
+    expect(getNoteTitles()).toEqual(['Alpha 2', 'Zebra 10', 'Beta 1'])
+
+    const sortSelect = screen.getByRole('combobox', {
+      name: 'Sort notes',
+    })
+
+    await user.selectOptions(sortSelect, 'updated-asc')
+
+    expect(getNoteTitles()).toEqual(['Zebra 10', 'Alpha 2', 'Beta 1'])
+
+    await user.selectOptions(sortSelect, 'title-asc')
+
+    expect(getNoteTitles()).toEqual(['Alpha 2', 'Beta 1', 'Zebra 10'])
   })
 
   it('validates and creates a note with the exact rich-text payload', async () => {

@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 
 import type { Note } from '../api/notes.api'
+import { getNotePlainText } from '../utils/note-content'
 
 interface NoteCardProps {
   note: Note
@@ -18,21 +19,6 @@ interface NoteCardProps {
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
 })
-
-function getPlainTextPreview(content: string): string {
-  const parsed = new DOMParser().parseFromString(content, 'text/html')
-
-  parsed
-    .querySelectorAll('script, style, noscript, template')
-    .forEach((element) => element.remove())
-
-  parsed
-    .querySelectorAll('br, p, h1, h2, h3, blockquote, li, pre')
-    .forEach((element) => element.append(' '))
-
-  const text = parsed.body.textContent?.replace(/\s+/g, ' ').trim() ?? ''
-  return text.length === 0 ? 'No content yet.' : text
-}
 
 function formatUpdatedDate(value: string): string {
   const date = new Date(value)
@@ -50,6 +36,7 @@ export function NoteCard({
   onCancelDelete,
   onConfirmDelete,
 }: NoteCardProps) {
+  const plainTextPreview = getNotePlainText(note.content)
   const cancelButtonRef = useRef<HTMLButtonElement>(null)
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const wasConfirmingDelete = useRef(false)
@@ -73,7 +60,7 @@ export function NoteCard({
         {note.title}
       </h3>
       <p className="mt-2 line-clamp-3 flex-1 text-sm leading-6 text-stone-600">
-        {getPlainTextPreview(note.content)}
+        {plainTextPreview || 'No content yet.'}
       </p>
       <p className="mt-5 text-xs font-medium uppercase tracking-[0.11em] text-stone-400">
         Updated{' '}
