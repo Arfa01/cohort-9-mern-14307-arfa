@@ -126,6 +126,7 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
+npm audit --omit=dev
 ```
 
 Before final submission, also smoke-test the authentication, dashboard, and editor flows at 320 px, 375 px, and 768 px viewport widths.
