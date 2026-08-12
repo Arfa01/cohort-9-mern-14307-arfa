@@ -1,26 +1,83 @@
-import cookieParser from "cookie-parser";   // so we can use request.cookies
+import { randomUUID } from "node:crypto";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
-import { pinoHttp } from "pino-http";
+import type pino from "pino";
+import { pinoHttp, type HttpLogger } from "pino-http";
 
-import { logger } from "./config/logger.js";
+import {
+  logger,
+  serializeError,
+} from "./config/logger.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { healthRouter } from "./routes/health.routes.js";
 import { noteRouter } from "./routes/note.routes.js";
 
-export function createApp(clientOrigin: string): Express {
+export function createRequestLogger(
+  appLogger: pino.Logger = logger,
+): HttpLogger<IncomingMessage, ServerResponse> {
+  return pinoHttp<IncomingMessage, ServerResponse>({
+    logger: appLogger,
+    serializers: {
+      req: (request) => ({
+        id: request.id,
+        method: request.method,
+        path:
+          typeof request.url === "string"
+            ? request.url.split("?", 1)[0]
+            : undefined,
+        remoteAddress: request.remoteAddress,
+        remotePort: request.remotePort,
+      }),
+      res: (response) => ({
+        statusCode: response.statusCode,
+      }),
+      err: serializeError,
+    },
+    genReqId: (_request, response) => {
+      const requestId = randomUUID();
+
+      response.setHeader("X-Request-Id", requestId);
+
+      return requestId;
+    },
+    customProps: (request) => ({
+      requestId: request.id,
+    }),
+    customReceivedMessage: () => "request received",
+    customLogLevel: (_request, response, error) => {
+      if (error !== undefined || response.statusCode >= 500) {
+        return "error";
+      }
+
+      if (response.statusCode >= 400) {
+        return "warn";
+      }
+
+      return "info";
+    },
+  });
+}
+
+export function createApp(
+  clientOrigin: string,
+  appLogger: pino.Logger = logger,
+): Express {
   const app = express();
 
   app.disable("x-powered-by");
 
+  app.use(createRequestLogger(appLogger));
+
   app.use(helmet());
 
   app.use(
-    cors({                     // allows react origin to send the cookie
-      origin: clientOrigin,   // origin should never be * because we want to allow only our react app to send the cookie. if we allow *, then any site can send the cookie and get access to the user's session.
+    cors({
+      origin: clientOrigin,
       credentials: true,
     }),
   );
@@ -33,14 +90,8 @@ export function createApp(clientOrigin: string): Express {
 
   app.use(cookieParser());
 
-  app.use(
-    pinoHttp({
-      logger,
-    }),
-  );
-
   app.use("/api/health", healthRouter);
-  app.use("/api/auth", authRouter);      // auth router should be mounted before the errors middlewares.
+  app.use("/api/auth", authRouter);
   app.use("/api/notes", noteRouter);
 
   app.use(notFoundHandler);

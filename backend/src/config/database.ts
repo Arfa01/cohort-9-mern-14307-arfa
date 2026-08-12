@@ -13,8 +13,11 @@ function registerConnectionListeners(): void {
     logger.warn("MongoDB connection was disconnected");
   });
 
-  mongoose.connection.on("error", () => {
-    logger.error("A MongoDB connection error occurred");
+  mongoose.connection.on("error", (error: Error) => {
+    logger.error(
+      { err: error },
+      "A MongoDB connection error occurred",
+    );
   });
 
   listenersRegistered = true;

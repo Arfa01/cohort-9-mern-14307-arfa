@@ -121,10 +121,12 @@ export const getCurrentUserHandler: RequestHandler = async (
 };
 
 export const logoutHandler: RequestHandler = (
-  _request,
+  request,
   response,
 ): void => {
   clearAuthCookie(response);
+
+  request.log.info("User logged out");
 
   response.status(200).json({
     success: true,

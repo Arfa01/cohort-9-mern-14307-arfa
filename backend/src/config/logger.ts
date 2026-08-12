@@ -1,42 +1,107 @@
-// in development, we want to see the logs in a more human-readable format, so we use pino-pretty. In production, we want to see the logs in a more structured format, so we use pino.
-
 import pino from "pino";
 
 import { getLoggingEnvironment } from "./env.js";
 
-const { nodeEnv, logLevel } = getLoggingEnvironment();
-const isDevelopment = nodeEnv === "development";
-const isTest = nodeEnv === "test";
+interface CreateLoggerOptions {
+  destination?: pino.DestinationStream;
+  level?: pino.LevelWithSilent;
+  pretty?: boolean;
+}
 
-const transport = isDevelopment
-  ? pino.transport({
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        translateTime: "SYS:standard",
-        ignore: "pid,hostname",
-      },
-    })
-  : undefined;
+const REDACTED_VALUE = "[REDACTED]";
 
-export const logger = pino(
-  {
-    level: isTest ? "silent" : logLevel,
-    redact: {
-      paths: [
-        "req.headers.authorization",
-        "req.headers.cookie",
-        "res.headers.set-cookie",
-        "req.body.password",
-        "req.body.confirmPassword",
-        "password",
-        "token",
-        "accessToken",
-        "refreshToken",
-        "passwordHash",
-      ],
-      censor: "[REDACTED]",
+const REDACT_PATHS = [
+  "req.headers.authorization",
+  "req.headers.cookie",
+  "req.body.password",
+  "req.body.confirmPassword",
+  "res.headers.set-cookie",
+  "err.body",
+  "password",
+  "confirmPassword",
+  "token",
+  "accessToken",
+  "refreshToken",
+  "passwordHash",
+] as const;
+
+function readStringProperty(
+  value: unknown,
+  property: string,
+): string | undefined {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    !(property in value)
+  ) {
+    return undefined;
+  }
+
+  const propertyValue = (value as Record<string, unknown>)[property];
+
+  return typeof propertyValue === "string"
+    ? propertyValue
+    : undefined;
+}
+
+export function serializeError(
+  error: unknown,
+): Record<string, unknown> {
+  const type =
+    readStringProperty(error, "type") ??
+    readStringProperty(error, "name") ??
+    "UnknownError";
+  const message =
+    readStringProperty(error, "message") ??
+    "A non-Error value was thrown.";
+  const stack = readStringProperty(error, "stack");
+
+  return {
+    type,
+    message,
+    ...(stack === undefined ? {} : { stack }),
+  };
+}
+
+export function createLogger(
+  options: CreateLoggerOptions = {},
+): pino.Logger {
+  const { nodeEnv, logLevel } = getLoggingEnvironment();
+  const level =
+    options.level ?? (nodeEnv === "test" ? "silent" : logLevel);
+  const usePrettyOutput =
+    options.pretty ??
+    (nodeEnv === "development" && options.destination === undefined);
+  const loggerOptions: pino.LoggerOptions = {
+    level,
+    serializers: {
+      err: serializeError,
     },
-  },
-  transport,
-);
+    redact: {
+      paths: [...REDACT_PATHS],
+      censor: REDACTED_VALUE,
+    },
+  };
+
+  if (options.destination !== undefined) {
+    return pino(loggerOptions, options.destination);
+  }
+
+  if (usePrettyOutput) {
+    return pino(
+      loggerOptions,
+      pino.transport({
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:standard",
+          ignore: "pid,hostname",
+        },
+      }),
+    );
+  }
+
+  return pino(loggerOptions);
+}
+
+export const logger = createLogger();
