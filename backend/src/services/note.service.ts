@@ -178,7 +178,7 @@ export async function updateNote(
       $set: changes,
     },
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     },
   ).exec();
