@@ -6,7 +6,10 @@ export function getNotePlainText(content: string): string {
     .forEach((element) => element.remove())
 
   parsed
-    .querySelectorAll('br, p, h1, h2, h3, blockquote, li, pre')
+    .querySelectorAll(
+      'br, p, div, h1, h2, h3, h4, h5, h6, blockquote, li, pre',
+    )
+
     .forEach((element) => element.append(' '))
 
   return parsed.body.textContent?.replace(/\s+/g, ' ').trim() ?? ''
