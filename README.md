@@ -8,6 +8,7 @@ A full-stack MERN notes application built for the 10Pearls Shine Cohort 9 assign
 - Protected routes and owner-scoped Notes APIs
 - Create, read, update, and delete notes
 - Tiptap rich-text editing with headings, emphasis, lists, quotes, and code
+- Case-insensitive search across note titles and visible rich-text content, with sorting by update time or title
 - Responsive authentication, dashboard, note-card, and editor layouts
 - Loading, empty, retry, not-found, validation, saving, and deletion states
 - Pino request, activity, and exception logging with request IDs and redaction
@@ -15,7 +16,7 @@ A full-stack MERN notes application built for the 10Pearls Shine Cohort 9 assign
 - Mocha/Chai backend tests and Jest/Testing Library frontend tests
 - LCOV coverage reports and SonarQube analysis configuration
 
-Search/filter, real-time updates, import/export, a separate profile screen, and autosave are optional extensions and are not part of the required implementation.
+Additional filters beyond search, real-time updates, import/export, a separate profile screen, and autosave are optional extensions and are not part of the required implementation.
 
 ## Technology stack
 
