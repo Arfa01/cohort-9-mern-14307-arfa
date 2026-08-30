@@ -59,7 +59,7 @@ cd ../frontend
 npm ci
 ```
 
-Update `backend/.env` with your own values. Never commit this file.
+Update `backend/.env` with your own values. Do not commit this file.
 
 | Variable | Purpose |
 | --- | --- |
@@ -130,7 +130,7 @@ npm run build
 npm audit --omit=dev
 ```
 
-Before final submission, also smoke-test the authentication, dashboard, and editor flows at 320 px, 375 px, and 768 px viewport widths.
+Smoke-test the authentication, dashboard, and editor flows at 320 px, 375 px, and 768 px viewport widths.
 
 Generate the two LCOV reports before a SonarQube scan:
 
@@ -146,7 +146,7 @@ The reports are written to `backend/coverage/lcov.info` and `frontend/coverage/l
 
 ## Final SonarQube scan
 
-The project is configured now, but the internship requires one final report rather than a scan on every pull request. Run the scan from the final, integrated branch after its dependencies are installed and both coverage reports have been generated.
+The scan is from the final, integrated branch after its dependencies are installed and both coverage reports have been generated. Follow these steps:
 
 For a temporary local SonarQube Community Build instance:
 
@@ -166,7 +166,7 @@ export SONAR_TOKEN='your-local-analysis-token'
 npx --yes @sonar/scan@5.0.0
 ```
 
-Use the built-in **Sonar way** JavaScript/TypeScript quality profile unless the mentor requests a custom profile. For the final report, retain the successful scanner output and the SonarQube Quality Gate, Overview, Issues, Security Hotspots, and Measures/Coverage pages. Do not commit the token, coverage folders, or `.scannerwork`.
+Use the built-in **Sonar way** JavaScript/TypeScript quality profile.
 
 See the official [SonarQube Community Build quick start](https://docs.sonarsource.com/sonarqube-community-build/try-out-sonarqube) and [SonarScanner for NPM documentation](https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/scanners/npm/using) for current details.
 
